@@ -6,6 +6,7 @@ const cors = require("cors");
 app.use(cors());
 app.use(express.json());
 
+
 const db = mysql.createConnection({
   multipleStatements: true,
   host: "localhost",
@@ -13,6 +14,8 @@ const db = mysql.createConnection({
   password: "admin",
   database: "projetbdd",
 });
+
+db.connect();
 
 app.post("/createlog", (req, res) => {
   const nomlog = req.body.nomlog;
@@ -195,6 +198,23 @@ app.post("/addgarage", (req, res) => {
 
 app.get("/", (req, res) => {
   res.send("<h1>Page de début</h1>");
+});
+
+app.get("/getlog", (req, res) => {
+  db.query(
+    "Select * from Logement;",
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.send(result);
+      }
+    }
+  );
+});
+
+app.get("/endconnection", (req, res) => {
+  db.end();
 });
 
 app.listen(8000, () => {
