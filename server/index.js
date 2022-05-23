@@ -62,13 +62,52 @@ app.put("/update", (req, res) => {
 });
 
 app.get("/getlog", (req, res) => {
-  db.query("Select * from Logement", (err, result) => {
+  db.query(
+    "Select * FROM Logement L WHERE L.Identifiant NOT IN (SELECT A.Identifiant FROM achete A);",
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.send(result);
+      }
+    }
+  );
+});
+
+app.get("/getgarage", (req, res) => {
+  db.query(
+    "Select G.Adresse,L.Nomlog,G.IdGarage from Logement L, Garage G where L.Identifiant = G.Identifiant and L.Identifiant NOT IN (SELECT A.Identifiant FROM achete A);",
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.send(result);
+      }
+    }
+  );
+});
+
+app.get("/getlistpers", (req, res) => {
+  db.query("Select * from Personne;", (err, result) => {
     if (err) {
       console.log(err);
     } else {
       res.send(result);
     }
   });
+});
+
+app.get("/listvisit", (req, res) => {
+  db.query(
+    "Select * from visite V,Logement L where V.Identifiant = L.Identifiant;",
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.send(result);
+      }
+    }
+  );
 });
 
 app.delete("/deletelog/:identifiant", (req, res) => {
@@ -113,6 +152,42 @@ app.get("/getlogvendus", (req, res) => {
         console.log(err);
       } else {
         res.send(result);
+      }
+    }
+  );
+});
+
+app.post("/ventelog", (req, res) => {
+  const identifiant = req.body.Identifiant;
+  const datevente = req.body.DateVente;
+  const nom = req.body.Nom;
+  const prenom = req.body.Prenom;
+  const PourcentagePrixVente = req.body.PourcentagePrixVente;
+  db.query(
+    "INSERT INTO achete (Identifiant,Nom,Prenom,PourcentagePrixVente,DateVente) VALUES (?,?,?,?,?)",
+    [identifiant, nom, prenom, PourcentagePrixVente, datevente],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.send(datevente);
+      }
+    }
+  );
+});
+
+app.post("/addgarage", (req, res) => {
+  const identifiant = req.body.identifiant;
+  const adresse = req.body.adresse;
+
+  db.query(
+    "INSERT INTO garage (Identifiant,Adresse) VALUES (?,?)",
+    [identifiant, adresse],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.send("Values Inserted");
       }
     }
   );
