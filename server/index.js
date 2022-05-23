@@ -193,6 +193,10 @@ app.post("/addgarage", (req, res) => {
   );
 });
 
+app.get("/", (req, res) => {
+  res.send("<h1>Page de début</h1>");
+});
+
 app.listen(8000, () => {
   console.log("yes your server is running");
 });
